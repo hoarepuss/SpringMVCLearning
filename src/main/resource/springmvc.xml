@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="cn.itcast"/>
+
+    <!-- 视图解析器 -->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <bean id="conversionServiceFactoryBean" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="cn.itcast.utils.StringToDateConverter" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- 配置文件解析器对象 id="multipartResolver"为必须 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+    <!--前端控制器，哪些静态资源不拦截-->
+    <mvc:resources location="/images/" mapping="/images/**" />
+    <mvc:resources location="/css/" mapping="/css/**" />
+    <mvc:resources location="/js/" mapping="/js/**" />
+
+    <!-- 开启SpringMVC框架对注解的支持 -->
+    <mvc:annotation-driven conversion-service="conversionServiceFactoryBean"/>
+
+    <!-- 异常处理器 -->
+    <bean id="sysExceptionResolver" class="cn.itcast.exception.SysExceptionResolver" />
+
+    <!-- 注册拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/param/**"/>
+            <bean id="myInterceptor" class="cn.itcast.interceptor.MyInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
